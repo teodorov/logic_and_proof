@@ -1,0 +1,544 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ascii" />
+    <title>12. Sets in Lean &#8212; Logic and Proof 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="13. Relations" href="relations.html" />
+    <link rel="prev" title="11. Sets" href="sets.html" />
+<!-- <link href="https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy" rel="stylesheet"> -->
+<!-- <link href="https://fonts.googleapis.com/css?family=Average" rel="stylesheet"> -->
+<!-- <link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet"> -->
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sets-in-lean">
+<h1>12. Sets in Lean<a class="headerlink" href="#sets-in-lean" title="Permalink to this headline">&#182;</a></h1>
+<p>In the last chapter, we noted that although in axiomatic set theory one consider sets of disparate objects, it is more common in mathematics to consider subsets of some fixed domain, <span class="math">\(\mathcal U\)</span>. This is the way sets are handled in Lean. For any data type <code class="docutils literal"><span class="pre">U</span></code>, Lean gives us a new data type, <code class="docutils literal"><span class="pre">set</span> <span class="pre">U</span></code>, consisting of the sets of elements of <code class="docutils literal"><span class="pre">U</span></code>. Thus, for example, we can reason about sets of natural numbers, or sets of integers, or sets of pairs of natural numbers.</p>
+<div class="section" id="basics">
+<span id="sets-in-lean-basics"></span><h2>12.1. Basics<a class="headerlink" href="#basics" title="Permalink to this headline">&#182;</a></h2>
+<p>Given <code class="docutils literal"><span class="pre">A</span> <span class="pre">:</span> <span class="pre">set</span> <span class="pre">U</span></code> and <code class="docutils literal"><span class="pre">x</span> <span class="pre">:</span> <span class="pre">U</span></code>, we can write <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span></code> to state that <code class="docutils literal"><span class="pre">x</span></code> is a member of the set <code class="docutils literal"><span class="pre">A</span></code>. The character <code class="docutils literal"><span class="pre">&#8712;</span></code> can be typed using <code class="docutils literal"><span class="pre">\in</span></code>. We need to import the library file <code class="docutils literal"><span class="pre">data.set</span></code> and open the &#8220;namespace&#8221; set to have the notions and notations made available to us.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0Avariable%20x%20:%20U%0A%0A#check%20x%20%E2%88%88%20A%0A#check%20A%20%E2%88%AA%20B%0A#check%20B%20%5C%20C%0A#check%20C%20%E2%88%A9%20A%0A#check%20-C%0A#check%20%E2%88%85%20%E2%8A%86%20A%0A#check%20B%20%E2%8A%86%20univ" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kn">import</span> <span class="n">data.set</span>
+<span class="kn">open</span> <span class="n">set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variables</span> <span class="n">A</span> <span class="n">B</span> <span class="n">C</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span>
+<span class="kd">variable</span> <span class="n">x</span> <span class="o">:</span> <span class="n">U</span>
+
+<span class="k">#check</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span>
+<span class="k">#check</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span>
+<span class="k">#check</span> <span class="n">B</span> <span class="bp">\</span> <span class="n">C</span>
+<span class="k">#check</span> <span class="n">C</span> <span class="bp">&#8745;</span> <span class="n">A</span>
+<span class="k">#check</span> <span class="bp">-</span><span class="n">C</span>
+<span class="k">#check</span> <span class="bp">&#8709;</span> <span class="bp">&#8838;</span> <span class="n">A</span>
+<span class="k">#check</span> <span class="n">B</span> <span class="bp">&#8838;</span> <span class="n">univ</span>
+</pre></div>
+</div>
+</div><p>You can type the symbols <code class="docutils literal"><span class="pre">&#8838;</span></code>, <code class="docutils literal"><span class="pre">&#8709;</span></code>, <code class="docutils literal"><span class="pre">&#8746;</span></code>, <code class="docutils literal"><span class="pre">&#8745;</span></code>, <code class="docutils literal"><span class="pre">\</span></code> as <code class="docutils literal"><span class="pre">\subeq</span></code> <code class="docutils literal"><span class="pre">\empty</span></code>, <code class="docutils literal"><span class="pre">\un</span></code>, <code class="docutils literal"><span class="pre">\i</span></code>, and <code class="docutils literal"><span class="pre">\\</span></code>, respectively. We have made the type variable <code class="docutils literal"><span class="pre">U</span></code> implicit, because it can typically be inferred from context. The universal set is denoted <code class="docutils literal"><span class="pre">univ</span></code>, and set complementation is denoted with a negation symbol.</p>
+<p>The following pattern can be used to show that <code class="docutils literal"><span class="pre">A</span></code> is a subset of <code class="docutils literal"><span class="pre">B</span></code>:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20A%20%E2%8A%86%20B%20:=%0Aassume%20x,%0Aassume%20h%20:%20x%20%E2%88%88%20A,%0Ashow%20x%20%E2%88%88%20B,%20from%20sorry%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">sorry</span>
+</pre></div>
+</div>
+</div><p>And the following pattern be used to show that <code class="docutils literal"><span class="pre">A</span></code> and <code class="docutils literal"><span class="pre">B</span></code> are equal:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20A%20=%20B%20:=%0Aeq_of_subset_of_subset%0A%20%20(assume%20x,%0A%20%20%20%20assume%20h%20:%20x%20%E2%88%88%20A,%0A%20%20%20%20show%20x%20%E2%88%88%20B,%20from%20sorry)%0A%20%20(assume%20x,%0A%20%20%20%20assume%20h%20:%20x%20%E2%88%88%20B,%0A%20%20%20%20show%20x%20%E2%88%88%20A,%20from%20sorry)%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">=</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="n">eq_of_subset_of_subset</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+    <span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">sorry</span><span class="o">)</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+    <span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">sorry</span><span class="o">)</span>
+</pre></div>
+</div>
+</div><p>Alternatively, we can use the following pattern:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20A%20=%20B%20:=%0Aext%20(assume%20x,%20iff.intro%0A%20%20(assume%20h%20:%20x%20%E2%88%88%20A,%0A%20%20%20%20show%20x%20%E2%88%88%20B,%20from%20sorry)%0A%20%20(assume%20h%20:%20x%20%E2%88%88%20B,%0A%20%20%20%20show%20x%20%E2%88%88%20A,%20from%20sorry))%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">=</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="n">ext</span> <span class="o">(</span><span class="k">assume</span> <span class="n">x</span><span class="o">,</span> <span class="n">iff.intro</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">sorry</span><span class="o">)</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">sorry</span><span class="o">))</span>
+</pre></div>
+</div>
+</div><p>Here, <code class="docutils literal"><span class="pre">ext</span></code> is short for &#8220;extensionality.&#8221; In symbolic terms, it is the following fact:</p>
+<div class="math">
+\[\forall x \; (x \in A \leftrightarrow x \in B) \to A = B.\]</div>
+<p>This reduces proving <span class="math">\(A = B\)</span> to proving <span class="math">\(\forall x \; (x \in A \leftrightarrow x \in B)\)</span>, which we can do using <span class="math">\(\forall\)</span> and <span class="math">\(\leftrightarrow\)</span> introduction.</p>
+<p>Moreover, Lean supports the following nifty feature: the defining rules for union, intersection and other operations on sets are considered to hold &#8220;definitionally.&#8221; This means that the expressions <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">&#8745;</span> <span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">&#8743;</span> <span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">B</span></code> mean the same thing to Lean. This is the same for the other constructions on sets; for example <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">\</span> <span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">&#8743;</span> <span class="pre">&#172;</span> <span class="pre">(x</span> <span class="pre">&#8712;</span> <span class="pre">B)</span></code> mean the same thing to Lean. You can also write <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8713;</span> <span class="pre">B</span></code> for <code class="docutils literal"><span class="pre">&#172;</span> <span class="pre">(x</span> <span class="pre">&#8712;</span> <span class="pre">B)</span></code>, where <code class="docutils literal"><span class="pre">&#8713;</span></code> is written using <code class="docutils literal"><span class="pre">\notin</span></code>. For the other set constructions, the defining equivalences in the last chapter hold definitionally. The following example illustrates these features.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20%E2%88%80%20x,%20x%20%E2%88%88%20A%20%E2%86%92%20x%20%E2%88%88%20B%20%E2%86%92%20x%20%E2%88%88%20A%20%E2%88%A9%20B%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A,%0Aassume%20:%20x%20%E2%88%88%20B,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20%E2%80%B9x%20%E2%88%88%20B%E2%80%BA%0A%0Aexample%20:%20A%20%E2%8A%86%20A%20%E2%88%AA%20B%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%AA%20B,%20from%20or.inl%20this%0A%0Aexample%20:%20%E2%88%85%20%E2%8A%86%20A%20%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20%E2%88%85,%0Ashow%20x%20%E2%88%88%20A,%20from%20false.elim%20%E2%80%B9x%20%E2%88%88%20(%E2%88%85%20:%20set%20U)%E2%80%BA%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">&#8250;</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="n">this</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8709;</span> <span class="bp">&#8838;</span> <span class="n">A</span>  <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">&#8709;</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">false.elim</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="bp">&#8709;</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)&#8250;</span>
+</pre></div>
+</div>
+</div><p>Remember from <a class="reference internal" href="propositional_logic_in_lean.html#definitions-and-theorems"><span class="std std-numref">Section 4.5</span></a> that we can use <code class="docutils literal"><span class="pre">assume</span></code> without a label, and refer back to hypotheses using French quotes. We have used this feature in the previous example. Without that feature, we could have written the examples above as follows:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20%E2%88%80%20x,%20x%20%E2%88%88%20A%20%E2%86%92%20x%20%E2%88%88%20B%20%E2%86%92%20x%20%E2%88%88%20A%20%E2%88%A9%20B%20:=%0Aassume%20x,%0Aassume%20h1%20:%20x%20%E2%88%88%20A,%0Aassume%20h2%20:%20x%20%E2%88%88%20B,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%20from%20and.intro%20h1%20h2%0A%0Aexample%20:%20A%20%E2%8A%86%20A%20%E2%88%AA%20B%20:=%0Aassume%20x,%0Aassume%20h%20:%20x%20%E2%88%88%20A,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%AA%20B,%20from%20or.inl%20h%0A%0Aexample%20:%20%E2%88%85%20%E2%8A%86%20A%20%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20%E2%88%85,%0Ashow%20x%20%E2%88%88%20A,%20from%20false.elim%20%E2%80%B9x%20%E2%88%88%20(%E2%88%85%20:%20set%20U)%E2%80%BA%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h1</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="n">h1</span> <span class="n">h2</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="n">h</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8709;</span> <span class="bp">&#8838;</span> <span class="n">A</span>  <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">&#8709;</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">false.elim</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="bp">&#8709;</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)&#8250;</span>
+</pre></div>
+</div>
+</div><p>Below, and in the chapters that follow, we will begin to use <code class="docutils literal"><span class="pre">assume</span></code> and <code class="docutils literal"><span class="pre">have</span></code> command without labels.</p>
+<p>Notice also that in the last example, we had to annotate the empty set by writing <code class="docutils literal"><span class="pre">(&#8709;</span> <span class="pre">:</span> <span class="pre">set</span> <span class="pre">U)</span></code> to tell Lean which empty set we mean. Lean can often infer information like this from the context (for example, from the fact that we are trying to show <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span></code>, where <code class="docutils literal"><span class="pre">A</span></code> has type <code class="docutils literal"><span class="pre">set</span> <span class="pre">U</span></code>), but in this case, it needs a bit more help.</p>
+<p>Alternatively, we can use versions theorems in the Lean library that are designed specifically for use with sets:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20%E2%88%80%20x,%20x%20%E2%88%88%20A%20%E2%86%92%20x%20%E2%88%88%20B%20%E2%86%92%20x%20%E2%88%88%20A%20%E2%88%A9%20B%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A,%0Aassume%20:%20x%20%E2%88%88%20B,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%20from%20mem_inter%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20%E2%80%B9x%20%E2%88%88%20B%E2%80%BA%0A%0Aexample%20:%20A%20%E2%8A%86%20A%20%E2%88%AA%20B%20:=%0Aassume%20x,%0Aassume%20h%20:%20x%20%E2%88%88%20A,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%AA%20B,%20from%20mem_union_left%20B%20h%0A%0Aexample%20:%20%E2%88%85%20%E2%8A%86%20A%20%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20%E2%88%85,%0Ashow%20x%20%E2%88%88%20A,%20from%20absurd%20this%20(not_mem_empty%20x)%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">mem_inter</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">&#8250;</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">mem_union_left</span> <span class="n">B</span> <span class="n">h</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8709;</span> <span class="bp">&#8838;</span> <span class="n">A</span>  <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">&#8709;</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">absurd</span> <span class="n">this</span> <span class="o">(</span><span class="n">not_mem_empty</span> <span class="n">x</span><span class="o">)</span>
+</pre></div>
+</div>
+</div><p>Remember that <code class="docutils literal"><span class="pre">absurd</span></code> can be used to prove any fact from two contradictory hypotheses <code class="docutils literal"><span class="pre">h1</span> <span class="pre">:</span> <span class="pre">P</span></code> and <code class="docutils literal"><span class="pre">h2</span> <span class="pre">:</span> <span class="pre">&#172;</span> <span class="pre">P</span></code>. Here the <code class="docutils literal"><span class="pre">not_mem_empty</span> <span class="pre">x</span></code> is the fact <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8713;</span> <span class="pre">&#8709;</span></code>. You can see the statements of the theorems using the <code class="docutils literal"><span class="pre">#check</span></code> command in Lean:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0A--%20BEGIN%0A#check%20&#64;mem_inter%0A#check%20&#64;mem_of_mem_inter_left%0A#check%20&#64;mem_of_mem_inter_right%0A#check%20&#64;mem_union_left%0A#check%20&#64;mem_union_right%0A#check%20&#64;mem_or_mem_of_mem_union%0A#check%20&#64;not_mem_empty%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="k">#check</span> <span class="bp">@</span><span class="n">mem_inter</span>
+<span class="k">#check</span> <span class="bp">@</span><span class="n">mem_of_mem_inter_left</span>
+<span class="k">#check</span> <span class="bp">@</span><span class="n">mem_of_mem_inter_right</span>
+<span class="k">#check</span> <span class="bp">@</span><span class="n">mem_union_left</span>
+<span class="k">#check</span> <span class="bp">@</span><span class="n">mem_union_right</span>
+<span class="k">#check</span> <span class="bp">@</span><span class="n">mem_or_mem_of_mem_union</span>
+<span class="k">#check</span> <span class="bp">@</span><span class="n">not_mem_empty</span>
+</pre></div>
+</div>
+</div><p>Here, the <code class="docutils literal"><span class="pre">&#64;</span></code> symbol in Lean prevents it from trying to fill in implicit arguments automatically, and instead display the full statement of the theorem.</p>
+<p>The fact that Lean can identify sets with their logical definitions makes it easy to prove inclusions between sets:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20A%20%5C%20B%20%E2%8A%86%20A%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A%20%5C%20B,%0Ashow%20x%20%E2%88%88%20A,%20from%20and.left%20this%0A%0Aexample%20:%20A%20%5C%20B%20%E2%8A%86%20-B%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A%20%5C%20B,%0Ahave%20x%20%E2%88%89%20B,%20from%20and.right%20this,%0Ashow%20x%20%E2%88%88%20-B,%20from%20this%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">this</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span> <span class="bp">&#8838;</span> <span class="bp">-</span><span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">have</span> <span class="n">x</span> <span class="bp">&#8713;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">this</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">-</span><span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">this</span>
+</pre></div>
+</div>
+</div><p>Once again, we can use versions of the theorems designed specifically for sets:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20A%20%5C%20B%20%E2%8A%86%20A%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A%20%5C%20B,%0Ashow%20x%20%E2%88%88%20A,%20from%20mem_of_mem_diff%20this%0A%0Aexample%20:%20A%20%5C%20B%20%E2%8A%86%20-B%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A%20%5C%20B,%0Ahave%20x%20%E2%88%89%20B,%20from%20not_mem_of_mem_diff%20this,%0Ashow%20x%20%E2%88%88%20-B,%20from%20this%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">mem_of_mem_diff</span> <span class="n">this</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span> <span class="bp">&#8838;</span> <span class="bp">-</span><span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">\</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">have</span> <span class="n">x</span> <span class="bp">&#8713;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">not_mem_of_mem_diff</span> <span class="n">this</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">-</span><span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">this</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="some-identities">
+<h2>12.2. Some Identities<a class="headerlink" href="#some-identities" title="Permalink to this headline">&#182;</a></h2>
+<p>here is the proof of the first identity that we proved informally in the previous chapter:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C)%20=%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C)%20:=%0Aeq_of_subset_of_subset%0A%20%20(assume%20x,%0A%20%20%20%20assume%20h%20:%20x%20%E2%88%88%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C),%0A%20%20%20%20have%20x%20%E2%88%88%20A,%20from%20and.left%20h,%0A%20%20%20%20have%20x%20%E2%88%88%20B%20%E2%88%AA%20C,%20from%20and.right%20h,%0A%20%20%20%20or.elim%20(%E2%80%B9x%20%E2%88%88%20B%20%E2%88%AA%20C%E2%80%BA)%0A%20%20%20%20%20%20(assume%20:%20x%20%E2%88%88%20B,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20%E2%80%B9x%20%E2%88%88%20B%E2%80%BA,%0A%20%20%20%20%20%20%20%20show%20x%20%E2%88%88%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C),%20from%20or.inl%20this)%0A%20%20%20%20%20%20(assume%20:%20x%20%E2%88%88%20C,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20A%20%E2%88%A9%20C,%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20%E2%80%B9x%20%E2%88%88%20C%E2%80%BA,%0A%20%20%20%20%20%20%20%20show%20x%20%E2%88%88%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C),%20from%20or.inr%20this))%0A%20%20(assume%20x,%0A%20%20%20%20assume%20:%20x%20%E2%88%88%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C),%0A%20%20%20%20or.elim%20this%0A%20%20%20%20%20%20(assume%20h%20:%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20A,%20from%20and.left%20h,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20B,%20from%20and.right%20h,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20B%20%E2%88%AA%20C,%20from%20or.inl%20this,%0A%20%20%20%20%20%20%20%20show%20x%20%E2%88%88%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C),%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20this)%0A%20%20%20%20%20%20(assume%20h%20:%20x%20%E2%88%88%20A%20%E2%88%A9%20C,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20A,%20from%20and.left%20h,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20C,%20from%20and.right%20h,%0A%20%20%20%20%20%20%20%20have%20x%20%E2%88%88%20B%20%E2%88%AA%20C,%20from%20or.inr%20this,%0A%20%20%20%20%20%20%20%20show%20x%20%E2%88%88%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C),%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20this))%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">)</span> <span class="o">:=</span>
+<span class="n">eq_of_subset_of_subset</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+    <span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">),</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">h</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">h</span><span class="o">,</span>
+    <span class="n">or.elim</span> <span class="o">(&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">&#8250;)</span>
+      <span class="o">(</span><span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">&#8250;,</span>
+        <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="n">this</span><span class="o">)</span>
+      <span class="o">(</span><span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">C</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">C</span><span class="o">&#8250;,</span>
+        <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">or.inr</span> <span class="n">this</span><span class="o">))</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+    <span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">),</span>
+    <span class="n">or.elim</span> <span class="n">this</span>
+      <span class="o">(</span><span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">h</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">h</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="n">this</span><span class="o">,</span>
+        <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="n">this</span><span class="o">)</span>
+      <span class="o">(</span><span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">h</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">h</span><span class="o">,</span>
+        <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inr</span> <span class="n">this</span><span class="o">,</span>
+        <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="n">this</span><span class="o">))</span>
+</pre></div>
+</div>
+</div><p>Notice that it is considerably longer than the informal proof in the last chapter, because we have spelled out every last detail. Unfortunately, this does not necessarily make it more readable. Keep in mind that you can always write long proofs incrementally, using <code class="docutils literal"><span class="pre">sorry</span></code>. You can also break up long proofs into smaller pieces:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Atheorem%20inter_union_subset%20:%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C)%20%E2%8A%86%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C)%20:=%0Aassume%20x,%0Aassume%20h%20:%20x%20%E2%88%88%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C),%0Ahave%20x%20%E2%88%88%20A,%20from%20and.left%20h,%0Ahave%20x%20%E2%88%88%20B%20%E2%88%AA%20C,%20from%20and.right%20h,%0Aor.elim%20(%E2%80%B9x%20%E2%88%88%20B%20%E2%88%AA%20C%E2%80%BA)%0A%20%20(assume%20:%20x%20%E2%88%88%20B,%0A%20%20%20%20have%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20%E2%80%B9x%20%E2%88%88%20B%E2%80%BA,%0A%20%20%20%20show%20x%20%E2%88%88%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C),%20from%20or.inl%20this)%0A%20%20(assume%20:%20x%20%E2%88%88%20C,%0A%20%20%20%20have%20x%20%E2%88%88%20A%20%E2%88%A9%20C,%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20%E2%80%B9x%20%E2%88%88%20C%E2%80%BA,%0A%20%20%20%20show%20x%20%E2%88%88%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C),%20from%20or.inr%20this)%0A%0Atheorem%20inter_union_inter_subset%20:%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C)%20%E2%8A%86%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C)%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C),%0Aor.elim%20this%0A%20%20(assume%20h%20:%20x%20%E2%88%88%20A%20%E2%88%A9%20B,%0A%20%20%20%20have%20x%20%E2%88%88%20A,%20from%20and.left%20h,%0A%20%20%20%20have%20x%20%E2%88%88%20B,%20from%20and.right%20h,%0A%20%20%20%20have%20x%20%E2%88%88%20B%20%E2%88%AA%20C,%20from%20or.inl%20this,%0A%20%20%20%20show%20x%20%E2%88%88%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C),%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20this)%0A%20%20(assume%20h%20:%20x%20%E2%88%88%20A%20%E2%88%A9%20C,%0A%20%20%20%20have%20x%20%E2%88%88%20A,%20from%20and.left%20h,%0A%20%20%20%20have%20x%20%E2%88%88%20C,%20from%20and.right%20h,%0A%20%20%20%20have%20x%20%E2%88%88%20B%20%E2%88%AA%20C,%20from%20or.inr%20this,%0A%20%20%20%20show%20x%20%E2%88%88%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C),%20from%20and.intro%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%20this)%0A%0Aexample%20:%20A%20%E2%88%A9%20(B%20%E2%88%AA%20C)%20=%20(A%20%E2%88%A9%20B)%20%E2%88%AA%20(A%20%E2%88%A9%20C)%20:=%0Aeq_of_subset_of_subset%0A%20%20(inter_union_subset%20A%20B%20C)%0A%20%20(inter_union_inter_subset%20A%20B%20C)%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">theorem</span> <span class="n">inter_union_subset</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">)</span> <span class="bp">&#8838;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">)</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">),</span>
+<span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">h</span><span class="o">,</span>
+<span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">h</span><span class="o">,</span>
+<span class="n">or.elim</span> <span class="o">(&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">&#8250;)</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">&#8250;,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="n">this</span><span class="o">)</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">C</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">C</span><span class="o">&#8250;,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">or.inr</span> <span class="n">this</span><span class="o">)</span>
+
+<span class="kd">theorem</span> <span class="n">inter_union_inter_subset</span> <span class="o">:</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">)</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">)</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">),</span>
+<span class="n">or.elim</span> <span class="n">this</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">h</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">h</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="n">this</span><span class="o">,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="n">this</span><span class="o">)</span>
+  <span class="o">(</span><span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.left</span> <span class="n">h</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.right</span> <span class="n">h</span><span class="o">,</span>
+    <span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inr</span> <span class="n">this</span><span class="o">,</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">),</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span> <span class="n">this</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">C</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span><span class="o">)</span> <span class="o">:=</span>
+<span class="n">eq_of_subset_of_subset</span>
+  <span class="o">(</span><span class="n">inter_union_subset</span> <span class="n">A</span> <span class="n">B</span> <span class="n">C</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">inter_union_inter_subset</span> <span class="n">A</span> <span class="n">B</span> <span class="n">C</span><span class="o">)</span>
+</pre></div>
+</div>
+</div><p>Notice that the two theorems depend on the variables <code class="docutils literal"><span class="pre">A</span></code>, <code class="docutils literal"><span class="pre">B</span></code>, and <code class="docutils literal"><span class="pre">C</span></code>, which have to be supplied as arguments when they are applied. They also depend on the underlying type, <code class="docutils literal"><span class="pre">U</span></code>, but because the variable <code class="docutils literal"><span class="pre">U</span></code> was marked implicit, Lean figures it out from the context.</p>
+<p>In the last chapter we showed <span class="math">\((A \cap \overline B) \cup B = B\)</span>. Here is the corresponding proof in Lean:</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%20U%20:%20Type%0Avariables%20A%20B%20C%20:%20set%20U%0A%0A--%20BEGIN%0Aexample%20:%20(A%20%E2%88%A9%20-B)%20%E2%88%AA%20B%20=%20A%20%E2%88%AA%20B%20:=%0Acalc%0A%20%20(A%20%E2%88%A9%20-B)%20%E2%88%AA%20B%20=%20(A%20%E2%88%AA%20B)%20%E2%88%A9%20(-B%20%E2%88%AA%20B)%20:%20by%20rewrite%20union_distrib_right%0A%20%20%20%20%20%20%20%20%20%20%20...%20=%20(A%20%E2%88%AA%20B)%20%E2%88%A9%20univ%20%20%20%20%20:%20by%20rewrite%20compl_union_self%0A%20%20%20%20%20%20%20%20%20%20%20...%20=%20A%20%E2%88%AA%20B%20%20%20%20%20%20%20%20%20%20%20%20%20%20:%20by%20rewrite%20inter_univ%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">example</span> <span class="o">:</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="bp">-</span><span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="bp">=</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">calc</span>
+  <span class="o">(</span><span class="n">A</span> <span class="bp">&#8745;</span> <span class="bp">-</span><span class="n">B</span><span class="o">)</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="bp">=</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="bp">-</span><span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">)</span> <span class="o">:</span> <span class="kd">by</span> <span class="n">rewrite</span> <span class="n">union_distrib_right</span>
+           <span class="bp">...</span> <span class="bp">=</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8745;</span> <span class="n">univ</span>     <span class="o">:</span> <span class="kd">by</span> <span class="n">rewrite</span> <span class="n">compl_union_self</span>
+           <span class="bp">...</span> <span class="bp">=</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span>              <span class="o">:</span> <span class="kd">by</span> <span class="n">rewrite</span> <span class="n">inter_univ</span>
+</pre></div>
+</div>
+</div><p>Translated to propositions, the theorem above states that for every pair of elements <span class="math">\(A\)</span> and <span class="math">\(B\)</span> in a Boolean algebra, <span class="math">\((A \wedge \neg B) \vee B = B\)</span>. Lean allows us to do calculations on propositions as though they are elements of a Boolean algebra, with equality replaced by <code class="docutils literal"><span class="pre">&#8596;</span></code>.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20logic.basic%0Aopen%20classical%0A%0Atheorem%20not_or_self%20(P%20:%20Prop)%20:%20(%C2%AC%20P%20%E2%88%A8%20P)%20%E2%86%94%20true%20:=%0Aiff.intro%20(%CE%BB%20h,%20trivial)%20(%CE%BB%20h,%20or.symm%20(em%20P))%0A%0A--%20BEGIN%0Avariables%20A%20B%20:%20Prop%0A%0Aexample%20:%20(A%20%E2%88%A7%20%C2%AC%20B)%20%E2%88%A8%20B%20%E2%86%94%20A%20%E2%88%A8%20B%20:=%0Acalc%0A%20%20%20%20(A%20%E2%88%A7%20%C2%AC%20B)%20%E2%88%A8%20B%20%E2%86%94%20(A%20%E2%88%A8%20B)%20%E2%88%A7%20(%C2%AC%20B%20%E2%88%A8%20B)%20:%20by%20rw%20and_or_distrib_right%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20...%20%E2%86%94%20(A%20%E2%88%A8%20B)%20%E2%88%A7%20true%20%20%20%20%20%20:%20by%20rw%20not_or_self%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20...%20%E2%86%94%20(A%20%E2%88%A8%20B)%20%20%20%20%20%20%20%20%20%20%20%20%20:%20by%20rw%20and_true%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">variables</span> <span class="n">A</span> <span class="n">B</span> <span class="o">:</span> <span class="kt">Prop</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8743;</span> <span class="bp">&#172;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8744;</span> <span class="n">B</span> <span class="bp">&#8596;</span> <span class="n">A</span> <span class="bp">&#8744;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">calc</span>
+    <span class="o">(</span><span class="n">A</span> <span class="bp">&#8743;</span> <span class="bp">&#172;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8744;</span> <span class="n">B</span> <span class="bp">&#8596;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8744;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8743;</span> <span class="o">(</span><span class="bp">&#172;</span> <span class="n">B</span> <span class="bp">&#8744;</span> <span class="n">B</span><span class="o">)</span> <span class="o">:</span> <span class="kd">by</span> <span class="n">rw</span> <span class="n">and_or_distrib_right</span>
+                <span class="bp">...</span> <span class="bp">&#8596;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8744;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8743;</span> <span class="n">true</span>      <span class="o">:</span> <span class="kd">by</span> <span class="n">rw</span> <span class="n">not_or_self</span>
+                <span class="bp">...</span> <span class="bp">&#8596;</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8744;</span> <span class="n">B</span><span class="o">)</span>             <span class="o">:</span> <span class="kd">by</span> <span class="n">rw</span> <span class="n">and_true</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="power-sets-and-indexed-families">
+<h2>12.3. Power Sets and Indexed Families<a class="headerlink" href="#power-sets-and-indexed-families" title="Permalink to this headline">&#182;</a></h2>
+<p>We can also work with power sets and indexed unions and intersections in Lean. If <code class="docutils literal"><span class="pre">A</span> <span class="pre">:</span> <span class="pre">set</span> <span class="pre">U</span></code>, then <code class="docutils literal"><span class="pre">powerset</span> <span class="pre">A</span></code> is a subset of <code class="docutils literal"><span class="pre">set</span> <span class="pre">U</span></code>, that is, we have <code class="docutils literal"><span class="pre">powerset</span> <span class="pre">A</span> <span class="pre">:</span> <span class="pre">set</span> <span class="pre">(set</span> <span class="pre">X)</span></code>. For Lean, <code class="docutils literal"><span class="pre">A</span> <span class="pre">&#8712;</span> <span class="pre">powerset</span> <span class="pre">B</span></code> means the same thing as <code class="docutils literal"><span class="pre">A</span> <span class="pre">&#8838;</span> <span class="pre">B</span></code>, which, in turn, means <code class="docutils literal"><span class="pre">&#8704;x,</span> <span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">&#8594;</span> <span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">B</span></code>.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariable%20%20%7BU%20:%20Type%7D%0Avariables%20(A%20B%20:%20set%20U)%0A%0A--%20BEGIN%0A#check%20powerset%20A%0A%0Aexample%20:%20A%20%E2%88%88%20powerset%20(A%20%E2%88%AA%20B)%20:=%0Aassume%20x,%0Aassume%20:%20x%20%E2%88%88%20A,%0Ashow%20x%20%E2%88%88%20A%20%E2%88%AA%20B,%20from%20or.inl%20%E2%80%B9x%20%E2%88%88%20A%E2%80%BA%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="k">#check</span> <span class="n">powerset</span> <span class="n">A</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8712;</span> <span class="n">powerset</span> <span class="o">(</span><span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">)</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">or.inl</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">&#8250;</span>
+</pre></div>
+</div>
+</div><p>A family of sets in Lean is written as <code class="docutils literal"><span class="pre">A</span> <span class="pre">:</span> <span class="pre">I</span> <span class="pre">&#8594;</span> <span class="pre">set</span> <span class="pre">U</span></code> where <code class="docutils literal"><span class="pre">I</span></code> is a <code class="docutils literal"><span class="pre">Type</span></code>. Then the intersection and union of the family of sets <code class="docutils literal"><span class="pre">A</span></code> is written <code class="docutils literal"><span class="pre">&#8898;i,</span> <span class="pre">A</span> <span class="pre">i</span></code> <code class="docutils literal"><span class="pre">&#8899;i,</span> <span class="pre">A</span> <span class="pre">i</span></code>. These characters can be typed with <code class="docutils literal"><span class="pre">\I</span></code> and <code class="docutils literal"><span class="pre">\Un</span></code>. For Lean, <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">&#8898;i,</span> <span class="pre">A</span> <span class="pre">i</span></code> means <code class="docutils literal"><span class="pre">&#8704;i</span> <span class="pre">:</span> <span class="pre">I,</span> <span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">i</span></code> and <code class="docutils literal"><span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">&#8899;i,</span> <span class="pre">A</span> <span class="pre">i</span></code> means <code class="docutils literal"><span class="pre">&#8707;i</span> <span class="pre">:</span> <span class="pre">I,</span> <span class="pre">x</span> <span class="pre">&#8712;</span> <span class="pre">A</span> <span class="pre">i</span></code>. To refresh your memory at to how to work with the universal and existential quantifier in Lean, see <a class="reference internal" href="first_order_logic_in_lean.html#first-order-logic-in-lean"><span class="std std-numref">Chapters 9</span></a>.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Atheorem%20%7Bu%20v%7D%20mem_of_mem_Inter%20%7B%CE%B9%20:%20Type%20u%7D%20%7B%CE%B1%20:%20Type%20v%7D%0A%7Ba%20:%20%CE%B1%7D%20%7Bs%20:%20%CE%B9%20%E2%86%92%20set%20%CE%B1%7D%20(h%20:%20a%20%E2%88%88%20%E2%8B%82%20i,%20s%20i)%20(i%20:%20%CE%B9)%20:%0Aa%20%E2%88%88%20s%20i%20:=%0Ah%20(s%20i)%20%E2%9F%A8i,%20rfl%E2%9F%A9%0A%0Atheorem%20%7Bu%20v%7D%20mem_Union%20%7B%CE%B9%20:%20Type%20u%7D%20%7B%CE%B1%20:%20Type%20v%7D%0A%7Ba%20:%20%CE%B1%7D%20%7Bs%20:%20%CE%B9%20%E2%86%92%20set%20%CE%B1%7D%20%7Bi%20:%20%CE%B9%7D%20(h%20:%20a%20%E2%88%88%20s%20i)%20:%20a%20%E2%88%88%20%E2%8B%83%20i,%20s%20i%20:=%0A%E2%9F%A8s%20i,%20%E2%9F%A8%E2%9F%A8i,%20rfl%E2%9F%A9,%20h%E2%9F%A9%E2%9F%A9%0A%0A--%20BEGIN%0Avariables%20%7BI%20U%20:%20Type%7D%0Avariables%20(A%20:%20I%20%E2%86%92%20set%20U)%0A%0Aexample%20(i%E2%82%80%20:%20I)%20:%20(%E2%8B%82%20i,%20A%20i)%20%E2%8A%86%20(%E2%8B%83%20i,%20A%20i)%20:=%0Aassume%20x,%0Aassume%20h%20:%20x%20%E2%88%88%20%E2%8B%82%20i,%20A%20i,%0Ahave%20x%20%E2%88%88%20A%20i%E2%82%80,%20from%20mem_of_mem_Inter%20h%20i%E2%82%80,%0Ashow%20x%20%E2%88%88%20%E2%8B%83%20i,%20A%20i,%20from%20mem_Union%20%E2%80%B9x%20%E2%88%88%20A%20i%E2%82%80%E2%80%BA%0A--%20END" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kd">variables</span> <span class="o">{</span><span class="n">I</span> <span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variables</span> <span class="o">(</span><span class="n">A</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">&#8594;</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">(</span><span class="n">i&#8320;</span> <span class="o">:</span> <span class="n">I</span><span class="o">)</span> <span class="o">:</span> <span class="o">(</span><span class="bp">&#8898;</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">&#8838;</span> <span class="o">(</span><span class="bp">&#8899;</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">&#8898;</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">,</span>
+<span class="k">have</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="n">i&#8320;</span><span class="o">,</span> <span class="k">from</span> <span class="n">mem_of_mem_Inter</span> <span class="n">h</span> <span class="n">i&#8320;</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">&#8899;</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">,</span> <span class="k">from</span> <span class="n">mem_Union</span> <span class="o">&#8249;</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="n">i&#8320;</span><span class="o">&#8250;</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="exercises">
+<h2>12.4. Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">&#182;</a></h2>
+<ol class="arabic">
+<li><p class="first">Fill in the <code class="docutils literal"><span class="pre">sorry</span></code>&#8217;s.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Asection%0A%20%20variable%20%20U%20:%20Type%0A%20%20variable%20%20A%20:%20U%20%E2%86%92%20Prop%0A%20%20variable%20%20B%20:%20U%20%E2%86%92%20U%20%E2%86%92%20Prop%0A%0A%20%20--%20problem%201%0A%0A%20%20example%20(h%20:%20%E2%88%80%20x%20y,%20A%20x%20%E2%86%92%20B%20x%20y)%20:%20%E2%88%80%20x,%20(A%20x%20%E2%86%92%20%E2%88%80%20y,%20B%20x%20y)%20:=%0A%20%20sorry%0Aend%0A%0Asection%0A%20%20variable%20U%20:%20Type%0A%20%20variables%20A%20B%20C%20:%20set%20U%0A%0A%20%20--%20problem%202%0A%0A%20%20example%20:%20%E2%88%80%20x,%20x%20%E2%88%88%20A%20%E2%88%A9%20C%20%E2%86%92%20x%20%E2%88%88%20A%20%E2%88%AA%20B%20:=%0A%20%20sorry%0A%0A%20%20--%20problem%203%0A%0A%20%20example%20:%20%E2%88%80%20x,%20x%20%E2%88%88%20-(A%20%E2%88%AA%20B)%20%E2%86%92%20x%20%E2%88%88%20-A%20:=%0A%20%20sorry%0Aend" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kn">import</span> <span class="n">data.set</span>
+<span class="kn">open</span> <span class="n">set</span>
+
+<span class="kn">section</span>
+  <span class="kd">variable</span>  <span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span>
+  <span class="kd">variable</span>  <span class="n">A</span> <span class="o">:</span> <span class="n">U</span> <span class="bp">&#8594;</span> <span class="kt">Prop</span>
+  <span class="kd">variable</span>  <span class="n">B</span> <span class="o">:</span> <span class="n">U</span> <span class="bp">&#8594;</span> <span class="n">U</span> <span class="bp">&#8594;</span> <span class="kt">Prop</span>
+
+  <span class="c1">-- problem 1</span>
+
+  <span class="kd">example</span> <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span> <span class="n">y</span><span class="o">,</span> <span class="n">A</span> <span class="n">x</span> <span class="bp">&#8594;</span> <span class="n">B</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="n">A</span> <span class="n">x</span> <span class="bp">&#8594;</span> <span class="bp">&#8704;</span> <span class="n">y</span><span class="o">,</span> <span class="n">B</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="n">sorry</span>
+<span class="kd">end</span>
+
+<span class="kn">section</span>
+  <span class="kd">variable</span> <span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span>
+  <span class="kd">variables</span> <span class="n">A</span> <span class="n">B</span> <span class="n">C</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span>
+
+  <span class="c1">-- problem 2</span>
+
+  <span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8745;</span> <span class="n">C</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span> <span class="o">:=</span>
+  <span class="n">sorry</span>
+
+  <span class="c1">-- problem 3</span>
+
+  <span class="kd">example</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">-</span><span class="o">(</span><span class="n">A</span> <span class="bp">&#8746;</span> <span class="n">B</span><span class="o">)</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="bp">-</span><span class="n">A</span> <span class="o">:=</span>
+  <span class="n">sorry</span>
+<span class="kd">end</span>
+</pre></div>
+</div>
+</div></li>
+<li><p class="first">Fill in the <code class="docutils literal"><span class="pre">sorry</span></code>.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20logic.basic%20data.set%0Aopen%20set%0A%0Avariable%20%7BU%20:%20Type%7D%0A%0A/-%20defining%20%22disjoint%22%20-/%0A%0Adefinition%20disj%20(A%20B%20:%20set%20U)%20:%20Prop%20:=%20%E2%88%80%20%E2%A6%83x%E2%A6%84,%20x%20%E2%88%88%20A%20%E2%86%92%20x%20%E2%88%88%20B%20%E2%86%92%20false%0A%0Aexample%20(A%20B%20:%20set%20U)%20(h%20:%20%E2%88%80%20x,%20%C2%AC%20(x%20%E2%88%88%20A%20%E2%88%A7%20x%20%E2%88%88%20B))%20:%20disj%20A%20B%20:=%0Aassume%20x,%0Aassume%20h1%20:%20x%20%E2%88%88%20A,%0Aassume%20h2%20:%20x%20%E2%88%88%20B,%0Ahave%20h3%20:%20x%20%E2%88%88%20A%20%E2%88%A7%20x%20%E2%88%88%20B,%20from%20and.intro%20h1%20h2,%0Ashow%20false,%20from%20h%20x%20h3%0A%0A--%20notice%20that%20we%20do%20not%20have%20to%20mention%20x%20when%20applying%20h%20:%20disj%20A%20B%0Aexample%20(A%20B%20:%20set%20U)%20(h1%20:%20disj%20A%20B)%20(x%20:%20U)%20(h2%20:%20x%20%E2%88%88%20A)%20(h3%20:%20x%20%E2%88%88%20B)%20:%20false%20:=%0Ah1%20h2%20h3%0A%0A--%20the%20same%20is%20true%20of%20%E2%8A%86%0Aexample%20(A%20B%20:%20set%20U)%20(x%20:%20U)%20(h%20:%20A%20%E2%8A%86%20B)%20(h1%20:%20x%20%E2%88%88%20A)%20:%20x%20%E2%88%88%20B%20:=%0Ah%20h1%0A%0A/-%20problem%201%20-/%0A%0A--%20replace%20the%20%22sorry%22%20by%20a%20proof%0Aexample%20(A%20B%20C%20D%20:%20set%20U)%20(h1%20:%20disj%20A%20B)%20(h2%20:%20C%20%E2%8A%86%20A)%20(h3%20:%20D%20%E2%8A%86%20B)%20:%20disj%20C%20D%20:=%0Asorry" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kn">import</span> <span class="n">logic.basic</span> <span class="n">data.set</span>
+<span class="kn">open</span> <span class="n">set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+
+<span class="c">/-</span><span class="cm"> defining &quot;disjoint&quot; -/</span>
+
+<span class="kd">definition</span> <span class="n">disj</span> <span class="o">(</span><span class="n">A</span> <span class="n">B</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span> <span class="o">:</span> <span class="kt">Prop</span> <span class="o">:=</span> <span class="bp">&#8704;</span> <span class="o">&#10627;</span><span class="n">x</span><span class="o">&#10628;,</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8594;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="bp">&#8594;</span> <span class="n">false</span>
+
+<span class="kd">example</span> <span class="o">(</span><span class="n">A</span> <span class="n">B</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="bp">&#8704;</span> <span class="n">x</span><span class="o">,</span> <span class="bp">&#172;</span> <span class="o">(</span><span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8743;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">))</span> <span class="o">:</span> <span class="n">disj</span> <span class="n">A</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="k">assume</span> <span class="n">x</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h1</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">,</span>
+<span class="k">assume</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span>
+<span class="k">have</span> <span class="n">h3</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span> <span class="bp">&#8743;</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">,</span> <span class="k">from</span> <span class="n">and.intro</span> <span class="n">h1</span> <span class="n">h2</span><span class="o">,</span>
+<span class="k">show</span> <span class="n">false</span><span class="o">,</span> <span class="k">from</span> <span class="n">h</span> <span class="n">x</span> <span class="n">h3</span>
+
+<span class="c1">-- notice that we do not have to mention x when applying h : disj A B</span>
+<span class="kd">example</span> <span class="o">(</span><span class="n">A</span> <span class="n">B</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">h1</span> <span class="o">:</span> <span class="n">disj</span> <span class="n">A</span> <span class="n">B</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">h2</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">)</span> <span class="o">(</span><span class="n">h3</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span><span class="o">)</span> <span class="o">:</span> <span class="n">false</span> <span class="o">:=</span>
+<span class="n">h1</span> <span class="n">h2</span> <span class="n">h3</span>
+
+<span class="c1">-- the same is true of &#8838;</span>
+<span class="kd">example</span> <span class="o">(</span><span class="n">A</span> <span class="n">B</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">B</span><span class="o">)</span> <span class="o">(</span><span class="n">h1</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">A</span><span class="o">)</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&#8712;</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="n">h</span> <span class="n">h1</span>
+
+<span class="c">/-</span><span class="cm"> problem 1 -/</span>
+
+<span class="c1">-- replace the &quot;sorry&quot; by a proof</span>
+<span class="kd">example</span> <span class="o">(</span><span class="n">A</span> <span class="n">B</span> <span class="n">C</span> <span class="n">D</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">h1</span> <span class="o">:</span> <span class="n">disj</span> <span class="n">A</span> <span class="n">B</span><span class="o">)</span> <span class="o">(</span><span class="n">h2</span> <span class="o">:</span> <span class="n">C</span> <span class="bp">&#8838;</span> <span class="n">A</span><span class="o">)</span> <span class="o">(</span><span class="n">h3</span> <span class="o">:</span> <span class="n">D</span> <span class="bp">&#8838;</span> <span class="n">B</span><span class="o">)</span> <span class="o">:</span> <span class="n">disj</span> <span class="n">C</span> <span class="n">D</span> <span class="o">:=</span>
+<span class="n">sorry</span>
+</pre></div>
+</div>
+</div></li>
+<li><p class="first">Prove the following facts about indexed unions and intersections.</p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariables%20%7BI%20J%20U%20:%20Type%7D%0Avariables%20(A%20:%20I%20%E2%86%92%20J%20%E2%86%92%20set%20U)%0A%0Aexample%20:%20(%E2%8B%83i,%20%E2%8B%82j,%20A%20i%20j)%20%E2%8A%86%20(%E2%8B%82j,%20%E2%8B%83i,%20A%20i%20j)%20:=%0Asorry" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kn">import</span> <span class="n">data.set</span>
+<span class="kn">open</span> <span class="n">set</span>
+
+<span class="kd">variables</span> <span class="o">{</span><span class="n">I</span> <span class="n">J</span> <span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variables</span> <span class="o">(</span><span class="n">A</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">&#8594;</span> <span class="n">J</span> <span class="bp">&#8594;</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="o">(</span><span class="bp">&#8899;</span><span class="n">i</span><span class="o">,</span> <span class="bp">&#8898;</span><span class="n">j</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span> <span class="n">j</span><span class="o">)</span> <span class="bp">&#8838;</span> <span class="o">(</span><span class="bp">&#8898;</span><span class="n">j</span><span class="o">,</span> <span class="bp">&#8899;</span><span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span> <span class="n">j</span><span class="o">)</span> <span class="o">:=</span>
+<span class="n">sorry</span>
+</pre></div>
+</div>
+</div><div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20classical%20set%0A%0Avariables%20%7BI%20U%20:%20Type%7D%0Avariables%20(A%20:%20I%20%E2%86%92%20set%20U)%20(B%20:%20set%20U)%0A%0Aexample%20:%20B%20%E2%88%A9%20(%E2%8B%83i,%20A%20i)%20=%20%E2%8B%83i,%20B%20%E2%88%A9%20A%20i%20:=%0Asorry%0A%0A--%20Hint:%20the%20reverse%20inclusion%20of%20the%20following%20example%20requires%20classical%20reasoning%0Aexample%20:%20B%20%E2%88%AA%20(%E2%8B%82i,%20A%20i)%20=%20%E2%8B%82i,%20B%20%E2%88%AA%20A%20i%20:=%0Asorry" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kn">import</span> <span class="n">data.set</span>
+<span class="kn">open</span> <span class="n">classical</span> <span class="n">set</span>
+
+<span class="kd">variables</span> <span class="o">{</span><span class="n">I</span> <span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variables</span> <span class="o">(</span><span class="n">A</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">&#8594;</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span> <span class="o">(</span><span class="n">B</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">B</span> <span class="bp">&#8745;</span> <span class="o">(</span><span class="bp">&#8899;</span><span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">&#8899;</span><span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="bp">&#8745;</span> <span class="n">A</span> <span class="n">i</span> <span class="o">:=</span>
+<span class="n">sorry</span>
+
+<span class="c1">-- Hint: the reverse inclusion of the following example requires classical reasoning</span>
+<span class="kd">example</span> <span class="o">:</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="o">(</span><span class="bp">&#8898;</span><span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">&#8898;</span><span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="bp">&#8746;</span> <span class="n">A</span> <span class="n">i</span> <span class="o">:=</span>
+<span class="n">sorry</span>
+</pre></div>
+</div>
+</div></li>
+<li><p class="first">Prove the following fact about power sets. You can use the theorems <code class="docutils literal"><span class="pre">subset.trans</span></code> and <code class="docutils literal"><span class="pre">subset.refl</span></code></p>
+<div style="position: relative">
+<div style='position: absolute; right: 0; top: 0; padding: 1ex'><a href="https://leanprover.github.io/live/master/#code=import%20data.set%0Aopen%20set%0A%0Avariables%20%7BU%20:%20Type%7D%0Avariables%20(A%20B%20C%20:%20set%20U)%0A%0A--%20For%20the%20exercise%20these%20two%20facts%20are%20useful%0Aexample%20(h1%20:%20A%20%E2%8A%86%20B)%20(h2%20:%20B%20%E2%8A%86%20C)%20:%20A%20%E2%8A%86%20C%20:=%0Asubset.trans%20h1%20h2%0A%0Aexample%20:%20A%20%E2%8A%86%20A%20:=%0Asubset.refl%20A%0A%0Aexample%20:%20A%20%E2%8A%86%20B%20%E2%86%94%20powerset%20A%20%E2%8A%86%20powerset%20B%20:=%0Asorry" target="_blank">
+try it!</a></div><div class="highlight-lean"><div class="highlight"><pre><span class="kn">import</span> <span class="n">data.set</span>
+<span class="kn">open</span> <span class="n">set</span>
+
+<span class="kd">variables</span> <span class="o">{</span><span class="n">U</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variables</span> <span class="o">(</span><span class="n">A</span> <span class="n">B</span> <span class="n">C</span> <span class="o">:</span> <span class="n">set</span> <span class="n">U</span><span class="o">)</span>
+
+<span class="c1">-- For the exercise these two facts are useful</span>
+<span class="kd">example</span> <span class="o">(</span><span class="n">h1</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">B</span><span class="o">)</span> <span class="o">(</span><span class="n">h2</span> <span class="o">:</span> <span class="n">B</span> <span class="bp">&#8838;</span> <span class="n">C</span><span class="o">)</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">C</span> <span class="o">:=</span>
+<span class="n">subset.trans</span> <span class="n">h1</span> <span class="n">h2</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">A</span> <span class="o">:=</span>
+<span class="n">subset.refl</span> <span class="n">A</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">B</span> <span class="bp">&#8596;</span> <span class="n">powerset</span> <span class="n">A</span> <span class="bp">&#8838;</span> <span class="n">powerset</span> <span class="n">B</span> <span class="o">:=</span>
+<span class="n">sorry</span>
+</pre></div>
+</div>
+</div></li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Logic and Proof</a></h1>
+
+
+
+
+
+
+
+
+<!-- <h3>Navigation</h3> -->
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="propositional_logic.html">2. Propositional Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="natural_deduction_for_propositional_logic.html">3. Natural Deduction for Propositional Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="propositional_logic_in_lean.html">4. Propositional Logic in Lean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classical_reasoning.html">5. Classical Reasoning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="semantics_of_propositional_logic.html">6. Semantics of Propositional Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_order_logic.html">7. First Order Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="natural_deduction_for_first_order_logic.html">8. Natural Deduction for First Order Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_order_logic_in_lean.html">9. First Order Logic in Lean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="semantics_of_first_order_logic.html">10. Semantics of First Order Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sets.html">11. Sets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">12. Sets in Lean</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basics">12.1. Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#some-identities">12.2. Some Identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#power-sets-and-indexed-families">12.3. Power Sets and Indexed Families</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">12.4. Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="relations.html">13. Relations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relations_in_lean.html">14. Relations in Lean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">15. Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions_in_lean.html">16. Functions in Lean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="the_natural_numbers_and_induction.html">17. The Natural Numbers and Induction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="the_natural_numbers_and_induction_in_lean.html">18. The Natural Numbers and Induction in Lean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementary_number_theory.html">19. Elementary Number Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementary_number_theory_in_lean.html">20. Elementary Number Theory in Lean</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="logic_and_proof.pdf">PDF version</a></li>
+    
+    <li class="toctree-l1"><a href="https://leanprover.github.io/">Lean Home</a></li>
+    
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Jeremy Avigad, Robert Y. Lewis, and Floris van Doorn.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/sets_in_lean.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
